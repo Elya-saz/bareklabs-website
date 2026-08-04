@@ -6,32 +6,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 3%;
+    --background: 225 12% 6.5%;
     --foreground: 0 0% 96%;
-    --card: 0 0% 5%;
+    --card: 225 10% 8.5%;
     --card-foreground: 0 0% 96%;
-    --popover: 0 0% 5%;
+    --popover: 225 10% 8.5%;
     --popover-foreground: 0 0% 96%;
     --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 4%;
-    --secondary: 0 0% 10%;
+    --primary-foreground: 0 0% 7%;
+    --secondary: 225 8% 13%;
     --secondary-foreground: 0 0% 96%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 225 8% 15%;
+    --muted-foreground: 0 0% 60%;
     --accent: 152 100% 50%;
-    --accent-foreground: 0 0% 4%;
+    --accent-foreground: 0 0% 7%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14%;
-    --input: 0 0% 16%;
+    --border: 225 8% 17%;
+    --input: 225 8% 19%;
     --ring: 152 100% 50%;
     --radius: 0.25rem;
 
     --signal: #00e87a;
     --danger: #ff4d4d;
-    --ink: #060606;
-    --panel: #0a0a0a;
-    --line: #1a1a1a;
+    --ink: #0c0e12;
+    --panel: #10131a;
+    --line: #20242e;
   }
 }
 
@@ -50,17 +50,17 @@
   }
   ::selection {
     background: var(--signal);
-    color: #060606;
+    color: #0c0e12;
   }
   ::-webkit-scrollbar {
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #060606;
+    background: #0c0e12;
   }
   ::-webkit-scrollbar-thumb {
-    background: #222;
-    border: 2px solid #060606;
+    background: #2a2f3a;
+    border: 2px solid #0c0e12;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--signal);
@@ -84,24 +84,42 @@
     border-color: var(--line);
   }
   .text-dim {
-    color: #6b6b6b;
+    color: #8a90a0;
   }
   .text-faint {
-    color: #3d3d3d;
+    color: #4d5462;
   }
 
   /* --- technical grid backdrop --- */
   .lab-grid {
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      linear-gradient(to right, rgba(160, 190, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(160, 190, 255, 0.05) 1px, transparent 1px);
     background-size: 56px 56px;
   }
   .lab-grid-fine {
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      linear-gradient(to right, rgba(160, 190, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(160, 190, 255, 0.035) 1px, transparent 1px);
     background-size: 14px 14px;
+  }
+
+  /* --- techy circuit nodes over the grid --- */
+  .lab-circuit {
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(0, 232, 122, 0.05) 0px, transparent 3px),
+      radial-gradient(circle at 75% 60%, rgba(125, 180, 255, 0.06) 0px, transparent 3px),
+      radial-gradient(circle at 50% 85%, rgba(0, 232, 122, 0.04) 0px, transparent 3px),
+      linear-gradient(to right, rgba(160, 190, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(160, 190, 255, 0.05) 1px, transparent 1px);
+    background-size: 224px 224px, 224px 224px, 224px 224px, 56px 56px, 56px 56px;
+  }
+
+  /* --- ambient halo --- */
+  .lab-halo {
+    background:
+      radial-gradient(900px 500px at 80% -10%, rgba(125, 180, 255, 0.07), transparent 60%),
+      radial-gradient(700px 420px at 10% 110%, rgba(0, 232, 122, 0.05), transparent 60%);
   }
 
   /* --- crosshair cursor on hero --- */
@@ -123,7 +141,7 @@
   /* --- spotlight card: radial light follows mouse --- */
   .spot-card {
     position: relative;
-    background: #0a0a0a;
+    background: #10131a;
   }
   .spot-card::before {
     content: '';
@@ -208,7 +226,7 @@
     to { transform: translateX(-50%); }
   }
   .ticker-track {
-    animation: ticker-scroll 42s linear infinite;
+    animation: ticker-scroll 55s linear infinite;
   }
   .ticker-track:hover {
     animation-play-state: paused;
@@ -216,7 +234,7 @@
 
   /* --- big outline wordmark --- */
   .outline-text {
-    -webkit-text-stroke: 1px #2a2a2a;
+    -webkit-text-stroke: 1px #333a48;
     color: transparent;
   }
 
@@ -225,7 +243,7 @@
     transition: background-color 0.3s ease, padding-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .index-row:hover {
-    background-color: rgba(255, 255, 255, 0.025);
+    background-color: rgba(160, 190, 255, 0.035);
     padding-left: 1.5rem;
   }
 }
