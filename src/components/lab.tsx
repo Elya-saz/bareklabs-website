@@ -74,6 +74,18 @@ export function MarketCanvas({ className }: { className?: string }) {
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
 
+    // theme-aware palette, re-read when data-theme flips
+    let gridColor = 'rgba(150,180,255,0.07)'
+    let nodeColor = 'rgba(150,180,255,0.14)'
+    const readTheme = () => {
+      const cs = getComputedStyle(canvas)
+      gridColor = cs.getPropertyValue('--canvas-grid').trim() || gridColor
+      nodeColor = cs.getPropertyValue('--canvas-node').trim() || nodeColor
+    }
+    readTheme()
+    const mo = new MutationObserver(readTheme)
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+
     // pseudo-random walk seed
     const walk: number[] = []
     let v = 0.5
@@ -88,7 +100,7 @@ export function MarketCanvas({ className }: { className?: string }) {
       ctx.clearRect(0, 0, w, h)
 
       // grid
-      ctx.strokeStyle = 'rgba(150,180,255,0.07)'
+      ctx.strokeStyle = gridColor
       ctx.lineWidth = 1
       const gs = 56
       for (let x = 0; x < w; x += gs) {
@@ -105,7 +117,7 @@ export function MarketCanvas({ className }: { className?: string }) {
       }
 
       // circuit nodes at grid intersections (subtle tech layer)
-      ctx.fillStyle = 'rgba(150,180,255,0.14)'
+      ctx.fillStyle = nodeColor
       for (let x = gs; x < w; x += gs * 3) {
         for (let y = gs; y < h; y += gs * 2) {
           ctx.fillRect(x - 1, y - 1, 2, 2)
@@ -199,6 +211,7 @@ export function MarketCanvas({ className }: { className?: string }) {
     return () => {
       cancelAnimationFrame(raf)
       ro.disconnect()
+      mo.disconnect()
       canvas.removeEventListener('mousemove', onMove)
       canvas.removeEventListener('mouseleave', onLeave)
     }
