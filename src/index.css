@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 3%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 152 100% 50%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 16%;
+    --ring: 152 100% 50%;
+    --radius: 0.25rem;
+
+    --signal: #00e87a;
+    --danger: #ff4d4d;
+    --ink: #060606;
+    --panel: #0a0a0a;
+    --line: #1a1a1a;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'cv05';
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: var(--signal);
+    color: #060606;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #060606;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #222;
+    border: 2px solid #060606;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--signal);
+  }
+}
+
+@layer utilities {
+  .font-mono-lab {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  .font-serif-lab {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+  .text-signal {
+    color: var(--signal);
+  }
+  .bg-signal {
+    background-color: var(--signal);
+  }
+  .border-line {
+    border-color: var(--line);
+  }
+  .text-dim {
+    color: #6b6b6b;
+  }
+  .text-faint {
+    color: #3d3d3d;
+  }
+
+  /* --- technical grid backdrop --- */
+  .lab-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  .lab-grid-fine {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 14px 14px;
+  }
+
+  /* --- crosshair cursor on hero --- */
+  .cursor-crosshair-lab {
+    cursor: crosshair;
+  }
+
+  /* --- scroll reveal --- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* --- spotlight card: radial light follows mouse --- */
+  .spot-card {
+    position: relative;
+    background: #0a0a0a;
+  }
+  .spot-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(0, 232, 122, 0.07),
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+  .spot-card:hover::before {
+    opacity: 1;
+  }
+
+  /* --- nav link scan effect --- */
+  .nav-link {
+    position: relative;
+    transition: color 0.25s ease;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1px;
+    width: 100%;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    transform: scaleX(1);
+  }
+  .nav-link.active {
+    color: var(--signal);
+  }
+
+  /* --- blinking status dot --- */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 232, 122, 0.5); }
+    50% { opacity: 0.55; box-shadow: 0 0 0 5px rgba(0, 232, 122, 0); }
+  }
+  .dot-live {
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  /* --- scanline sweep over hero --- */
+  @keyframes scan-sweep {
+    0% { top: -12%; }
+    100% { top: 112%; }
+  }
+  .scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 232, 122, 0.35), transparent);
+    animation: scan-sweep 7s linear infinite;
+    pointer-events: none;
+  }
+
+  /* --- glitch flicker for data labels --- */
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.4; }
+    97% { opacity: 0.9; }
+    98% { opacity: 0.5; }
+  }
+  .flicker {
+    animation: flicker 4s linear infinite;
+  }
+
+  /* --- ticker --- */
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .ticker-track {
+    animation: ticker-scroll 42s linear infinite;
+  }
+  .ticker-track:hover {
+    animation-play-state: paused;
+  }
+
+  /* --- big outline wordmark --- */
+  .outline-text {
+    -webkit-text-stroke: 1px #2a2a2a;
+    color: transparent;
+  }
+
+  /* --- index row hover --- */
+  .index-row {
+    transition: background-color 0.3s ease, padding-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .index-row:hover {
+    background-color: rgba(255, 255, 255, 0.025);
+    padding-left: 1.5rem;
+  }
+}
