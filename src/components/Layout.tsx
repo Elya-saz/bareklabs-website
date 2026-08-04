@@ -3,27 +3,104 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { cn } from '@/lib/utils'
 import { Reveal } from '@/components/lab'
 
-const NAV = [
+/* ---------- NAV STRUCTURE (with sub-categories on hover) ---------- */
+type NavItem = {
+  to: string
+  label: string
+  code: string
+  children?: { to: string; label: string; note: string }[]
+}
+
+const NAV: NavItem[] = [
   { to: '/', label: 'INDEX', code: '00' },
-  { to: '/analysis', label: 'ANALYSIS', code: '01' },
+  {
+    to: '/analysis',
+    label: 'ANALYSIS',
+    code: '01',
+    children: [
+      { to: '/analysis/insights', label: 'INSIGHTS', note: 'Research notes & reads' },
+      { to: '/analysis/ideas', label: 'INVESTMENT IDEAS', note: 'Theses with receipts' },
+    ],
+  },
   { to: '/souk-signal', label: 'SOUK SIGNAL', code: '02' },
-  { to: '/trade-tracker', label: 'TRADE TRACKER', code: '03' },
+  {
+    to: '/trade-tracker',
+    label: 'TRADE TRACKER',
+    code: '03',
+    children: [
+      { to: '/trade-tracker/stocks', label: 'STOCKS', note: 'Equity ledger, live' },
+      { to: '/trade-tracker/crypto', label: 'CRYPTO', note: 'Digital assets ledger' },
+    ],
+  },
   { to: '/about', label: 'ABOUT', code: '04' },
 ]
 
-const TICKER_ITEMS = [
-  { s: 'BVX COMP', v: '4,213.86', d: '+0.84%', up: true },
-  { s: 'ATW', v: '412.50', d: '+1.92%', up: true },
-  { s: 'CSRH', v: '118.20', d: '-0.34%', up: false },
-  { s: 'IAM', v: '129.95', d: '+0.51%', up: true },
-  { s: 'BTC/USD', v: '97,431', d: '+2.18%', up: true },
-  { s: 'ETH/USD', v: '3,812', d: '-1.04%', up: false },
-  { s: 'MASI', v: '13,204.1', d: '+0.22%', up: true },
-  { s: 'LBV', v: '205.40', d: '+0.76%', up: true },
-  { s: 'SOL/USD', v: '214.6', d: '+3.41%', up: true },
-  { s: 'TQM', v: '88.15', d: '-0.12%', up: false },
+/* ---------- GLOBAL MARKET TAPE (indices + MAG7 + crypto) ---------- */
+const TAPE: { s: string; v: string; d: string; up: boolean; g: string }[] = [
+  // US indices
+  { s: 'S&P 500', v: '6,412.30', d: '+0.42%', up: true, g: 'US' },
+  { s: 'NASDAQ', v: '21,208.7', d: '+0.68%', up: true, g: 'US' },
+  { s: 'DOW', v: '44,912.0', d: '-0.11%', up: false, g: 'US' },
+  // Europe
+  { s: 'STOXX 600', v: '552.84', d: '+0.19%', up: true, g: 'EU' },
+  { s: 'DAX', v: '24,315.0', d: '+0.31%', up: true, g: 'EU' },
+  { s: 'CAC 40', v: '7,812.4', d: '-0.24%', up: false, g: 'EU' },
+  { s: 'FTSE 100', v: '9,088.2', d: '+0.14%', up: true, g: 'EU' },
+  // Asia
+  { s: 'NIKKEI 225', v: '41,204.0', d: '+1.02%', up: true, g: 'AS' },
+  { s: 'HANG SENG', v: '25,118.0', d: '-0.47%', up: false, g: 'AS' },
+  { s: 'CSI 300', v: '4,086.5', d: '+0.36%', up: true, g: 'AS' },
+  // MAG 7
+  { s: 'AAPL', v: '232.40', d: '+0.83%', up: true, g: 'M7' },
+  { s: 'MSFT', v: '512.15', d: '+0.57%', up: true, g: 'M7' },
+  { s: 'NVDA', v: '182.66', d: '+1.94%', up: true, g: 'M7' },
+  { s: 'GOOGL', v: '196.28', d: '-0.32%', up: false, g: 'M7' },
+  { s: 'AMZN', v: '224.10', d: '+0.44%', up: true, g: 'M7' },
+  { s: 'META', v: '712.90', d: '+1.12%', up: true, g: 'M7' },
+  { s: 'TSLA', v: '308.72', d: '-1.28%', up: false, g: 'M7' },
+  // Crypto
+  { s: 'BTC', v: '97,431', d: '+2.18%', up: true, g: 'CR' },
+  { s: 'ETH', v: '3,812', d: '-1.04%', up: false, g: 'CR' },
+  { s: 'SOL', v: '214.60', d: '+3.41%', up: true, g: 'CR' },
+  { s: 'TAO', v: '412.30', d: '+5.02%', up: true, g: 'CR' },
+  { s: 'ICP', v: '12.84', d: '-0.86%', up: false, g: 'CR' },
+  { s: 'ZEC', v: '58.42', d: '+4.17%', up: true, g: 'CR' },
 ]
 
+/* keep old export name working for Home.tsx legacy import */
+const TICKER_ITEMS = TAPE.map((t) => ({ s: t.s, v: t.v, d: t.d, up: t.up }))
+export { TICKER_ITEMS }
+
+const GROUP_TONE: Record<string, string> = {
+  US: 'text-[#7db4ff]',
+  EU: 'text-[#c9a86a]',
+  AS: 'text-[#d98cb3]',
+  M7: 'text-[#9d8cff]',
+  CR: 'text-signal',
+}
+
+function TapeBar() {
+  const items = [...TAPE, ...TAPE]
+  return (
+    <div className="overflow-hidden border-b border-line bg-[#0d0f14]">
+      <div className="ticker-track flex w-max items-center py-2">
+        {items.map((it, i) => (
+          <div key={i} className="flex items-center gap-2.5 px-5 font-mono-lab text-[10.5px] tracking-wider">
+            <span className={cn('text-[8px] tracking-[0.2em]', GROUP_TONE[it.g])}>{it.g}</span>
+            <span className="font-medium text-foreground/90">{it.s}</span>
+            <span className="tabular-nums text-dim">{it.v}</span>
+            <span className={cn('tabular-nums', it.up ? 'text-signal' : 'text-[#ff5c5c]')}>
+              {it.up ? '▲' : '▼'} {it.d}
+            </span>
+            <span className="ml-2 h-3 w-px bg-line" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- CLOCK ---------- */
 function Clock() {
   const [now, setNow] = useState(new Date())
   useEffect(() => {
@@ -41,6 +118,72 @@ function Clock() {
   )
 }
 
+/* ---------- DESKTOP NAV ITEM (hover dropdown) ---------- */
+function DesktopNavItem({ n }: { n: NavItem }) {
+  const loc = useLocation()
+  const isActive = n.to === '/' ? loc.pathname === '/' : loc.pathname.startsWith(n.to)
+
+  if (!n.children) {
+    return (
+      <NavLink
+        to={n.to}
+        end={n.to === '/'}
+        className={cn(
+          'nav-link flex h-full items-center font-mono-lab text-[11.5px] tracking-[0.18em] transition-colors',
+          isActive ? 'active text-signal' : 'text-foreground/85 hover:text-signal'
+        )}
+      >
+        {n.label}
+      </NavLink>
+    )
+  }
+
+  return (
+    <div className="group relative flex h-full items-center">
+      <NavLink
+        to={n.to}
+        className={cn(
+          'nav-link flex items-center gap-1.5 font-mono-lab text-[11.5px] tracking-[0.18em] transition-colors',
+          isActive ? 'active text-signal' : 'text-foreground/85 group-hover:text-signal'
+        )}
+      >
+        {n.label}
+        <span className="text-[8px] text-faint transition-all duration-300 group-hover:rotate-180 group-hover:text-signal">▼</span>
+      </NavLink>
+
+      {/* dropdown */}
+      <div className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
+        <div className="min-w-[240px] border border-line bg-[#0d0f14] shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+          <div className="border-b border-line px-5 py-2.5 font-mono-lab text-[8px] tracking-[0.3em] text-faint">
+            {n.label} / SUB-SECTIONS
+          </div>
+          {n.children.map((c) => (
+            <NavLink
+              key={c.to}
+              to={c.to}
+              className={({ isActive: subActive }) =>
+                cn(
+                  'group/sub flex items-center justify-between gap-6 border-b border-line/50 px-5 py-3.5 transition-colors last:border-0 hover:bg-signal/[0.06]',
+                  subActive && 'bg-signal/[0.04]'
+                )
+              }
+            >
+              <div>
+                <div className={cn('font-mono-lab text-[11px] tracking-[0.2em]', 'text-foreground/90 group-hover/sub:text-signal')}>
+                  {c.label}
+                </div>
+                <div className="mt-1 font-mono-lab text-[9px] tracking-wider text-faint">{c.note}</div>
+              </div>
+              <span className="font-mono-lab text-faint transition-all duration-300 group-hover/sub:translate-x-1 group-hover/sub:text-signal">→</span>
+            </NavLink>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- LAYOUT ---------- */
 export default function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -61,70 +204,82 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---- header ---- */}
-      <header
-        className={cn(
-          'fixed inset-x-0 top-0 z-50 border-b transition-all duration-500',
-          scrolled ? 'border-line bg-[#060606]/90 backdrop-blur-md' : 'border-transparent bg-transparent'
-        )}
-      >
-        <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 md:h-24 md:px-10">
-          <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.svg" alt="BAREK LABS" className="h-9 w-auto md:h-11" />
-          </Link>
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div
+          className={cn(
+            'border-b transition-all duration-500',
+            scrolled ? 'border-line bg-[#0c0e12]/95 backdrop-blur-md' : 'border-line/60 bg-[#0c0e12]/80 backdrop-blur-sm'
+          )}
+        >
+          <div className="mx-auto flex h-20 max-w-[1440px] items-stretch justify-between px-5 md:h-[76px] md:px-10">
+            <Link to="/" className="flex items-center gap-3">
+              <img src="/logo.svg" alt="BAREK LABS" className="h-8 w-auto md:h-10" />
+            </Link>
 
-          <nav className="hidden items-center gap-7 md:flex">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.to === '/'}
-                className={({ isActive }) =>
-                  cn('nav-link font-mono-lab text-[11px] tracking-[0.18em] text-dim hover:text-foreground', isActive && 'active')
-                }
+            <nav className="hidden items-stretch gap-8 md:flex">
+              {NAV.map((n) => (
+                <DesktopNavItem key={n.to} n={n} />
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-5">
+              <Clock />
+              <div className="hidden items-center gap-2 font-mono-lab text-[10px] tracking-wider text-signal md:flex">
+                <span className="dot-live inline-block h-1.5 w-1.5 rounded-full bg-signal" />
+                SYSTEMS NOMINAL
+              </div>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="flex h-8 w-8 flex-col items-center justify-center gap-1.5 md:hidden"
+                aria-label="Menu"
               >
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-5">
-            <Clock />
-            <div className="hidden items-center gap-2 font-mono-lab text-[10px] tracking-wider text-signal md:flex">
-              <span className="dot-live inline-block h-1.5 w-1.5 rounded-full bg-signal" />
-              SYSTEMS NOMINAL
+                <span className={cn('h-px w-5 bg-foreground transition-transform', menuOpen && 'translate-y-[3.5px] rotate-45')} />
+                <span className={cn('h-px w-5 bg-foreground transition-transform', menuOpen && '-translate-y-[3.5px] -rotate-45')} />
+              </button>
             </div>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex h-8 w-8 flex-col items-center justify-center gap-1.5 md:hidden"
-              aria-label="Menu"
-            >
-              <span className={cn('h-px w-5 bg-foreground transition-transform', menuOpen && 'translate-y-[3.5px] rotate-45')} />
-              <span className={cn('h-px w-5 bg-foreground transition-transform', menuOpen && '-translate-y-[3.5px] -rotate-45')} />
-            </button>
           </div>
+
+          {/* mobile menu */}
+          {menuOpen && (
+            <nav className="border-t border-line bg-[#0c0e12] px-5 py-6 md:hidden">
+              {NAV.map((n) => (
+                <div key={n.to}>
+                  <NavLink
+                    to={n.to}
+                    end={n.to === '/'}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-baseline gap-3 py-3 font-mono-lab text-sm tracking-[0.15em]',
+                        isActive ? 'text-signal' : 'text-foreground/80'
+                      )
+                    }
+                  >
+                    <span className="text-[10px] text-faint">{n.code}</span>
+                    {n.label}
+                  </NavLink>
+                  {n.children && (
+                    <div className="mb-2 ml-8 border-l border-line pl-4">
+                      {n.children.map((c) => (
+                        <NavLink
+                          key={c.to}
+                          to={c.to}
+                          className={({ isActive }) =>
+                            cn('block py-2 font-mono-lab text-[11px] tracking-[0.2em]', isActive ? 'text-signal' : 'text-dim')
+                          }
+                        >
+                          {c.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+          )}
         </div>
 
-        {/* mobile menu */}
-        {menuOpen && (
-          <nav className="border-t border-line bg-[#060606] px-5 py-6 md:hidden">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.to === '/'}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-baseline gap-3 py-3 font-mono-lab text-sm tracking-[0.15em]',
-                    isActive ? 'text-signal' : 'text-dim'
-                  )
-                }
-              >
-                <span className="text-[10px] text-faint">{n.code}</span>
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-        )}
+        {/* ---- global market tape under menu ---- */}
+        <TapeBar />
       </header>
 
       {/* ---- page ---- */}
@@ -133,7 +288,7 @@ export default function Layout() {
       </main>
 
       {/* ---- footer ---- */}
-      <footer className="border-t border-line bg-[#050505]">
+      <footer className="border-t border-line bg-[#0a0c10]">
         <div className="mx-auto max-w-[1440px] px-5 py-14 md:px-10">
           <div className="grid gap-10 md:grid-cols-12">
             <div className="md:col-span-5">
@@ -176,7 +331,7 @@ export default function Layout() {
           </div>
           <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-line pt-6 font-mono-lab text-[10px] tracking-[0.2em] text-faint md:flex-row md:items-center">
             <span>© 2026 BAREK LABS — ALL SIGNALS RESERVED</span>
-            <span>BUILD 0.4.2 / VERCEL-READY</span>
+            <span>BUILD 0.5.0 / VERCEL-READY</span>
           </div>
         </div>
       </footer>
@@ -199,7 +354,7 @@ export function PageHero({
   children?: React.ReactNode
 }) {
   return (
-    <section className="lab-grid relative border-b border-line pt-32 pb-16 md:pt-40 md:pb-20">
+    <section className="lab-grid relative border-b border-line pt-44 pb-16 md:pt-52 md:pb-20">
       <div className="scanline" />
       <div className="mx-auto max-w-[1440px] px-5 md:px-10">
         <Reveal>
@@ -232,5 +387,3 @@ export function SectionHead({ index, label, right }: { index: string; label: str
     </Reveal>
   )
 }
-
-export { TICKER_ITEMS }
