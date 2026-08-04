@@ -1,13 +1,7 @@
 import { Link } from 'react-router'
 import { Reveal, useSpotlight } from '@/components/lab'
 import { PageHero, SectionHead } from '@/components/Layout'
-
-const STATS = [
-  { k: '342', l: 'TRADES LOGGED' },
-  { k: '61.4%', l: 'HIT RATE' },
-  { k: '+1.8R', l: 'AVG EXPECTANCY' },
-  { k: '0', l: 'UNEXPLAINED LOSSES' },
-]
+import { useLang } from '@/i18n/LanguageContext'
 
 function TrackCard({
   to, code, name, desc, stats, i,
@@ -17,10 +11,10 @@ function TrackCard({
   const ref = useSpotlight<HTMLAnchorElement>()
   return (
     <Reveal delay={i * 100}>
-      <Link ref={ref} to={to} className="spot-card group block border border-line p-8 transition-colors duration-300 hover:border-[#2e2e2e] md:p-12">
+      <Link ref={ref} to={to} className="spot-card group block border border-line p-8 transition-colors duration-300 border-line-hover md:p-12">
         <div className="flex items-start justify-between">
           <span className="font-mono-lab text-[10px] tracking-[0.3em] text-signal">{code}</span>
-          <span className="font-mono-lab text-lg text-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-signal">→</span>
+          <span className="font-mono-lab text-lg text-faint transition-all duration-300 group-hover:-translate-x-1 group-hover:text-signal rtl:rotate-180">→</span>
         </div>
         <h2 className="mt-12 text-3xl font-medium tracking-tight transition-colors group-hover:text-signal md:text-5xl">{name}</h2>
         <p className="mt-5 max-w-md font-mono-lab text-[11px] leading-5 tracking-wide text-dim">{desc}</p>
@@ -35,21 +29,22 @@ function TrackCard({
 }
 
 export default function TradeTracker() {
+  const { t } = useLang()
   return (
     <>
       <PageHero
-        code="03 / TRADE TRACKER"
-        title="Trade"
-        serif="tracker"
-        desc="RADICAL TRANSPARENCY: EVERY TRACKED POSITION — ENTRY, SIZE, EXIT, RATIONALE — LOGGED AND TIMESTAMPED. WINS AND LOSSES, NO EDITING."
+        code={t.tracker.hero.code}
+        title={t.tracker.hero.title}
+        serif={t.tracker.hero.serif}
+        desc={t.tracker.hero.desc}
       />
 
       <section className="lab-grid-fine border-b border-line">
         <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-10">
           <div className="grid gap-px overflow-hidden border border-line bg-line md:grid-cols-4">
-            {STATS.map((s, i) => (
-              <Reveal key={s.l} delay={i * 70} className="bg-[#060606] p-8">
-                <div className="text-4xl font-light tracking-tight text-signal">{s.k}</div>
+            {t.tracker.stats.map((s, i) => (
+              <Reveal key={s.l} delay={i * 70} className="bg-card2 p-8">
+                <div className="text-4xl font-light tracking-tight text-signal" dir="ltr">{s.k}</div>
                 <div className="mt-3 font-mono-lab text-[10px] tracking-[0.2em] text-dim">{s.l}</div>
               </Reveal>
             ))}
@@ -59,39 +54,37 @@ export default function TradeTracker() {
 
       <section>
         <div className="mx-auto max-w-[1440px] px-5 py-20 md:px-10">
-          <SectionHead index="03" label="Ledgers" right="SELECT A MARKET" />
+          <SectionHead index="03" label={t.tracker.ledgers.head} right={t.tracker.ledgers.headRight} />
           <div className="grid gap-4 md:grid-cols-2">
             <TrackCard
               to="/trade-tracker/stocks"
-              code="03.A"
-              name="STOCKS"
-              desc="Equity positions on regional and global exchanges. Swing horizon, breadth-confirmed entries."
-              stats={['218 TRADES', '63.2% HIT', 'SWING']}
+              code={t.tracker.ledgers.stocks.code}
+              name={t.tracker.ledgers.stocks.name}
+              desc={t.tracker.ledgers.stocks.desc}
+              stats={t.tracker.ledgers.stocks.stats}
               i={0}
             />
             <TrackCard
               to="/trade-tracker/crypto"
-              code="03.B"
-              name="CRYPTO"
-              desc="Digital asset positions, spot-led with strict leverage discipline. Funding-aware, regime-filtered."
-              stats={['124 TRADES', '58.1% HIT', 'MOMENTUM']}
+              code={t.tracker.ledgers.crypto.code}
+              name={t.tracker.ledgers.crypto.name}
+              desc={t.tracker.ledgers.crypto.desc}
+              stats={t.tracker.ledgers.crypto.stats}
               i={1}
             />
           </div>
         </div>
       </section>
 
-      <section className="border-t border-line bg-[#050505]">
+      <section className="border-t border-line bg-alt">
         <div className="mx-auto max-w-[1440px] px-5 py-20 md:px-10">
-          <SectionHead index="RULES" label="House rules" right="NON-NEGOTIABLE" />
+          <SectionHead index="RULES" label={t.tracker.rules.head} right={t.tracker.rules.headRight} />
           <div className="grid gap-px overflow-hidden border border-line bg-line md:grid-cols-3">
-            {[
-              { n: 'LOG BEFORE ENTRY', d: 'A trade that is not written down before execution does not exist. No retroactive narratives.' },
-              { n: 'SIZE BY CONVICTION', d: 'Position size follows the scenario map, never the mood. Max risk per idea: fixed, published.' },
-              { n: 'AUDIT THE LOSSES', d: 'Every losing trade gets a post-mortem within 48h. Pattern repeats get the strategy benched.' },
-            ].map((m, i) => (
-              <Reveal key={m.n} delay={i * 80} className="bg-[#060606] p-8 md:p-10">
-                <div className="font-mono-lab text-[10px] tracking-[0.3em] text-signal">RULE {String(i + 1).padStart(2, '0')}</div>
+            {t.tracker.rules.items.map((m, i) => (
+              <Reveal key={m.n} delay={i * 80} className="bg-card2 p-8 md:p-10">
+                <div className="font-mono-lab text-[10px] tracking-[0.3em] text-signal">
+                  {t.tracker.rules.rule} {String(i + 1).padStart(2, '0')}
+                </div>
                 <h3 className="mt-6 text-xl font-medium tracking-tight">{m.n}</h3>
                 <p className="mt-4 font-mono-lab text-[11px] leading-5 tracking-wide text-dim">{m.d}</p>
               </Reveal>
