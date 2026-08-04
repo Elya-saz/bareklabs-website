@@ -5,7 +5,7 @@ import { SectionHead, TICKER_ITEMS } from '@/components/Layout'
 function Ticker() {
   const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
   return (
-    <div className="overflow-hidden border-y border-line bg-[#080808]">
+    <div className="overflow-hidden border-y border-line bg-[#12151d]">
       <div className="ticker-track flex w-max items-center py-2.5">
         {items.map((it, i) => (
           <div key={i} className="flex items-center gap-3 px-6 font-mono-lab text-[11px] tracking-wider">
@@ -89,7 +89,7 @@ export default function Home() {
       <section className="relative flex min-h-screen flex-col border-b border-line">
         <MarketCanvas className="absolute inset-0" />
         <div className="scanline" />
-        <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-end px-5 pb-14 pt-32 md:px-10">
+        <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-end px-5 pb-14 pt-44 md:px-10 md:pt-48">
           <Reveal>
             <div className="mb-6 flex items-center gap-3 font-mono-lab text-[10px] tracking-[0.3em] text-signal">
               <span className="dot-live inline-block h-1.5 w-1.5 rounded-full bg-signal" />
@@ -117,7 +117,7 @@ export default function Home() {
               <div className="flex items-center gap-6">
                 <Link
                   to="/analysis"
-                  className="group border border-foreground/30 px-6 py-3 font-mono-lab text-[11px] tracking-[0.25em] transition-all duration-300 hover:border-signal hover:bg-signal hover:text-[#060606]"
+                  className="group border border-foreground/30 px-6 py-3 font-mono-lab text-[11px] tracking-[0.25em] transition-all duration-300 hover:border-signal hover:bg-signal hover:text-[#0e1117]"
                 >
                   ENTER THE LAB →
                 </Link>
@@ -187,7 +187,7 @@ export default function Home() {
               { k: '04', l: 'LIVE SIGNAL FEEDS' },
               { k: '24/7', l: 'MARKET SURVEILLANCE' },
             ].map((s, i) => (
-              <Reveal key={s.l} delay={i * 80} className="bg-[#060606] p-8 md:p-10">
+              <Reveal key={s.l} delay={i * 80} className="bg-[#0e1117] p-8 md:p-10">
                 <div className="text-4xl font-light tracking-tight text-signal md:text-5xl">{s.k}</div>
                 <div className="mt-3 font-mono-lab text-[10px] tracking-[0.2em] text-dim">{s.l}</div>
               </Reveal>
@@ -225,6 +225,7 @@ export default function Home() {
       {/* ============ CTA ============ */}
       <section className="relative overflow-hidden">
         <div className="lab-grid absolute inset-0 opacity-60" />
+        <div className="lab-halo absolute inset-0" />
         <div className="relative mx-auto max-w-[1440px] px-5 py-28 text-center md:px-10 md:py-40">
           <Reveal>
             <div className="font-mono-lab text-[10px] tracking-[0.3em] text-signal">ACCESS / OPEN</div>
@@ -238,7 +239,7 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 to="/souk-signal"
-                className="bg-signal px-8 py-3.5 font-mono-lab text-[11px] tracking-[0.25em] text-[#060606] transition-transform duration-300 hover:scale-[1.03]"
+                className="bg-signal px-8 py-3.5 font-mono-lab text-[11px] tracking-[0.25em] text-[#0e1117] transition-transform duration-300 hover:scale-[1.03]"
               >
                 READ TODAY'S SIGNAL
               </Link>
