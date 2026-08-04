@@ -67,9 +67,9 @@ export default function Layout() {
           scrolled ? 'border-line bg-[#060606]/90 backdrop-blur-md' : 'border-transparent bg-transparent'
         )}
       >
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 md:px-10">
+        <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 md:h-24 md:px-10">
           <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.svg" alt="BAREK LABS" className="h-5 w-auto" />
+            <img src="/logo.svg" alt="BAREK LABS" className="h-9 w-auto md:h-11" />
           </Link>
 
           <nav className="hidden items-center gap-7 md:flex">
