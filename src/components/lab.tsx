@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
-/* Reveals children on scroll (IntersectionObserver) with optional stagger delay */
+/* Reveals children on scroll (IntersectionObserver) with optional stagger delay.
+   Safety net: force-reveals after 700ms so content can never stay hidden. */
 export function Reveal({
   children,
   delay = 0,
@@ -26,11 +27,15 @@ export function Reveal({
           }
         })
       },
-      { threshold: 0.15 }
+      { threshold: 0.1, rootMargin: '0px 0px -5% 0px' }
     )
     obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
+    const safety = setTimeout(() => el.classList.add('is-in'), 700 + delay)
+    return () => {
+      obs.disconnect()
+      clearTimeout(safety)
+    }
+  }, [delay])
   return (
     // @ts-expect-error dynamic tag
     <Tag ref={ref} className={cn('reveal', className)} style={{ transitionDelay: `${delay}ms` }}>
@@ -83,7 +88,7 @@ export function MarketCanvas({ className }: { className?: string }) {
       ctx.clearRect(0, 0, w, h)
 
       // grid
-      ctx.strokeStyle = 'rgba(255,255,255,0.045)'
+      ctx.strokeStyle = 'rgba(150,180,255,0.07)'
       ctx.lineWidth = 1
       const gs = 56
       for (let x = 0; x < w; x += gs) {
@@ -97,6 +102,14 @@ export function MarketCanvas({ className }: { className?: string }) {
         ctx.moveTo(0, y + 0.5)
         ctx.lineTo(w, y + 0.5)
         ctx.stroke()
+      }
+
+      // circuit nodes at grid intersections (subtle tech layer)
+      ctx.fillStyle = 'rgba(150,180,255,0.14)'
+      for (let x = gs; x < w; x += gs * 3) {
+        for (let y = gs; y < h; y += gs * 2) {
+          ctx.fillRect(x - 1, y - 1, 2, 2)
+        }
       }
 
       // faint candlesticks drifting in background
