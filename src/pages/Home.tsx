@@ -96,7 +96,7 @@ export default function Home() {
               BAREK LABS / RESEARCH TERMINAL v0.4
             </div>
           </Reveal>
-          <h1 className="pointer-events-auto select-none text-[15vw] font-semibold leading-[0.88] tracking-[-0.03em] md:text-[10.5vw]">
+          <h1 className="pointer-events-auto select-none text-[10vw] font-semibold leading-[0.9] tracking-[-0.03em] md:text-[6.5vw]">
             <Reveal delay={80}>
               <span className="block">MARKET</span>
             </Reveal>
